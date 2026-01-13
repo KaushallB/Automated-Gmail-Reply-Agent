@@ -1,0 +1,272 @@
+{
+  "name": "AutoReplyAgent",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "filters": {
+          "labelIds": [
+            "Label_600609126022416940"
+          ],
+          "readStatus": "unread"
+        }
+      },
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -64,
+        -16
+      ],
+      "id": "9717f60c-d1cf-4166-9086-189d24a17191",
+      "name": "Gmail Trigger",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "decjqTJ5WepojnEo",
+          "name": "Gmail account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Incoming email:\n\nFrom: {{$json.from}}\nSubject: {{$json.subject}}\n\nMessage:\n{{$json.snippet}}\n",
+        "options": {
+          "systemMessage": "=You are an automatic email reply assistant for Kaushal.\n\nRules:\n- Start your reply with \"Hi {{ $json[\"senderName\"] }},\"\n- Write a polite, concise reply that acknowledges the sender’s message and confirms any important details.\n- Do not offer further assistance or ask follow-up questions unless the sender specifically requests it.\n- Do not repeat the sender’s message verbatim.\n- Do not introduce yourself.\n- Do not include quoted previous messages.\n- Only respond to the content provided.\n- If the sender is informing about an event or meeting, confirm receipt and express readiness or thanks, but do not ask for more information unless needed.\n- Keep the reply under 120 words.\n\n**Return only the reply text. Do not include your reasoning, thoughts, or any explanation.**"
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [
+        432,
+        -16
+      ],
+      "id": "acb893ea-3bdd-4437-aa8c-aa7d7f0c533d",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "model": "tngtech/deepseek-r1t-chimera:free",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenRouter",
+      "typeVersion": 1,
+      "position": [
+        368,
+        144
+      ],
+      "id": "7451f93a-7cf4-471d-9d5c-55c1b8fd66c3",
+      "name": "OpenRouter Chat Model",
+      "credentials": {
+        "openRouterApi": {
+          "id": "KNHzsNhT7WhdOJSS",
+          "name": "OpenRouter account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "gmail-reply-session"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        512,
+        192
+      ],
+      "id": "737efa65-8b09-4fd3-b869-649bce15e354",
+      "name": "Simple Memory",
+      "disabled": true
+    },
+    {
+      "parameters": {
+        "operation": "reply",
+        "messageId": "={{$node[\"Gmail Trigger\"].json[\"id\"]}}\n",
+        "message": "={{$node[\"AI Agent\"].json[\"output\"]}}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        784,
+        -16
+      ],
+      "id": "e1001b3d-beec-429d-a017-e400512798c4",
+      "name": "Reply to a message",
+      "webhookId": "f9a59bbe-3ffc-4c1b-a871-aa536c0c1e1e",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "decjqTJ5WepojnEo",
+          "name": "Gmail account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "markAsRead",
+        "messageId": "={{$json.id}}"
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        992,
+        -16
+      ],
+      "id": "01535aa5-f72c-4da1-bf27-6312221acd3e",
+      "name": "Mark a message as read",
+      "webhookId": "5066e521-09ad-4405-9d1e-4301604b606b",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "decjqTJ5WepojnEo",
+          "name": "Gmail account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const from = $json[\"From\"]; // or $json[\"payload\"][\"headers\"][\"From\"] if nested\nconst match = from.match(/^([^<]+)</);\nreturn {\n  ...$json,\n  senderName: match ? match[1].trim() : from\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        144,
+        -16
+      ],
+      "id": "e3afb92a-6fcc-4986-b642-09b3ed5c254d",
+      "name": "Code in JavaScript"
+    }
+  ],
+  "pinData": {
+    "Gmail Trigger": [
+      {
+        "json": {
+          "id": "19bb79e5e2e2ac85",
+          "threadId": "19bb79e5e2e2ac85",
+          "snippet": "Hi kaushal we have an interview tomorrow at 8 am",
+          "payload": {
+            "mimeType": "multipart/alternative"
+          },
+          "sizeEstimate": 5841,
+          "historyId": "2975734",
+          "internalDate": "1768312120000",
+          "labels": [
+            {
+              "id": "INBOX",
+              "name": "INBOX"
+            },
+            {
+              "id": "IMPORTANT",
+              "name": "IMPORTANT"
+            },
+            {
+              "id": "CATEGORY_PERSONAL",
+              "name": "CATEGORY_PERSONAL"
+            },
+            {
+              "id": "UNREAD",
+              "name": "UNREAD"
+            },
+            {
+              "id": "Label_600609126022416940",
+              "name": "Human"
+            }
+          ],
+          "From": "Wealth Wise <wealth.wisee.25@gmail.com>",
+          "Subject": "Interview",
+          "To": "kaushalbikram44@gmail.com"
+        },
+        "pairedItem": {
+          "item": 0
+        }
+      }
+    ]
+  },
+  "connections": {
+    "Gmail Trigger": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Reply to a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Reply to a message": {
+      "main": [
+        [
+          {
+            "node": "Mark a message as read",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1",
+    "availableInMCP": false,
+    "timeSavedMode": "fixed",
+    "callerPolicy": "workflowsFromSameOwner"
+  },
+  "versionId": "a4cafa0b-6254-4d70-8e30-77e5923aad26",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "289d0b08746fdf9ddbdd0d20607a839365d5428914742b8559f941297bb035b3"
+  },
+  "id": "ZKQkjcYKEyh7_knn_2DfV",
+  "tags": []
+}
