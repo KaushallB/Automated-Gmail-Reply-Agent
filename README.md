@@ -1,8 +1,8 @@
-# Auto-Gmail-Reply-Agent
+# Automated Gmail Reply Agent
 
 ## Overview
 
-Auto-Gmail-Reply-Agent is an automated email response workflow built using [n8n](https://n8n.io/), an open-source workflow automation tool. This project demonstrates a practical application of n8n for integrating Gmail with AI-powered reply generation, showcasing my proficiency in designing, configuring, and deploying n8n workflows for real-world automation tasks.
+Automated Gmail Reply Agent is an automated email response workflow built using [n8n](https://n8n.io/), an open-source workflow automation tool. This project demonstrates a practical application of n8n for integrating Gmail with AI-powered reply generation, showcasing my proficiency in designing, configuring, and deploying n8n workflows for real-world automation tasks.
 
 ## Screenshot
 
